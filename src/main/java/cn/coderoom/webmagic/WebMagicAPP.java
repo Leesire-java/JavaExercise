@@ -1,11 +1,15 @@
 package cn.coderoom.webmagic;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import us.codecraft.webmagic.Page;
+import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.utils.HttpConstant;
 
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @package：cn.coderoom.webmagic
@@ -18,7 +22,20 @@ public class WebMagicAPP implements PageProcessor {
 
     public static final String URL_LIST = "http://blog\\.sina\\.com\\.cn/s/articlelist_1487828712_0_\\d+\\.html";
 
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(100);
+    private Site site = Site
+            .me()
+            .setRetryTimes(3)
+            .setSleepTime(1000)
+            .setTimeOut(10000)
+            .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
+            .addHeader("Connection", "keep-alive")
+            .addHeader("X-Requested-With", "XMLHttpRequest")
+            .addHeader("Content-Type",
+                    "application/x-www-form-urlencoded;charset=utf-8")
+            .addHeader(
+                    "User-Agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+
 
     @Override
     public void process(Page page) {
@@ -60,6 +77,39 @@ public class WebMagicAPP implements PageProcessor {
 
     public static void main(String[] args) {
         Spider.create(new WebMagicAPP()).addUrl("http://whp.zjsafety.gov.cn/WebManage/EnterpriseRiskLogin.aspx").run();
+    }
+
+    private void post(){
+
+        //设置POST请求
+        Request request = new Request("http://PostRequestUrl.com");
+        //只有POST请求才可以添加附加参数
+        request.setMethod(HttpConstant.Method.POST);
+
+        //设置POST参数
+        List<NameValuePair> nvs = new ArrayList<NameValuePair>();
+        nvs.add(new BasicNameValuePair("key1", "value1"));
+        nvs.add(new BasicNameValuePair("key2", "value2"));
+
+        //转换为键值对数组
+        NameValuePair[] values = nvs.toArray(new NameValuePair[] {});
+
+        //将键值对数组添加到map中
+        Map<String, Object> params = new HashMap<String, Object>();
+        //key必须是：nameValuePair
+        params.put("nameValuePair", values);
+
+        //设置request参数
+        request.setExtras(params);
+
+        // 开始执行
+        try {
+            Spider.create(new Login()).addRequest(request).thread(5).run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 }
