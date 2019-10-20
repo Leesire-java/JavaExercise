@@ -128,9 +128,13 @@ public class ChromedriverLogin implements PageProcessor {
     public static WebDriver getChromeDriver() throws IOException {
 
         //System.setProperty("webdriver.chrome.driver","C:/Users/sunlc/AppData/Local/Google/Chrome/Application/chrome.exe");
+        /**
+         * linux需要注释
+         */
         System.setProperty("webdriver.chrome.driver","D:\\Program Files\\chromedriver\\chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-infobars");
         options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
         WebDriver driver = new ChromeDriver(options);
         // 创建一个 ChromeDriver 的接口，用于连接 Chrome（chromedriver.exe 的路径可以任意放置，只要在newFile（）的时候写入你放的路径即可）
@@ -172,13 +176,13 @@ public class ChromedriverLogin implements PageProcessor {
             int eleWidth = ele.getSize().getWidth();
             int eleHeight = ele.getSize().getHeight();
             ////前两个值是坐标位置X、Y，后两个是长和宽
-            BufferedImage eleScreenshot = fullImg.getSubimage(point.getX()+40, point.getY() - rollHeight.intValue(),
+            BufferedImage eleScreenshot = fullImg.getSubimage(point.getX()+120, point.getY() - rollHeight.intValue(),
                     eleWidth, eleHeight);
             ImageIO.write(eleScreenshot, "jpg", screenshot);
-            File screenshotLocation = new File("D:\\Program Files\\chromedriver\\cs.jpg");
+            File screenshotLocation = new File("D:\\Program Files\\chromedriver\\captcha.jpg");
             FileUtils.copyFile(screenshot, screenshotLocation);
 
-            return "cs.jpg";
+            return "captcha.jpg";
 
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
@@ -192,7 +196,7 @@ public class ChromedriverLogin implements PageProcessor {
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Spider.create(new ChromedriverLogin()).addUrl("http://whp.zjsafety.gov.cn/WebManage/EnterpriseRiskLogin.aspx").run();
     }
 
